@@ -3,6 +3,7 @@ const mongoose = require('mongoose'); //mongoose
 const dotenv = require('dotenv').config(); 
 const colors = require('colors'); //colors
 const connectDB = require('./config/db.js');
+const cors = require('cors'); //cors
 const port = process.env.PORT || 5000; //port
 const { errorHandler } = require('./middleware/errorMiddleware.js');
 
@@ -13,6 +14,8 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use(cors());
 
 app.use('/api/songs', require('./routes/songRoutes'));
 app.use(errorHandler);
