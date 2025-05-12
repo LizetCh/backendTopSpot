@@ -1,5 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // crear usuario
 const createUser = asyncHandler(async (req, res) => {
@@ -67,10 +69,39 @@ const deleteUser = asyncHandler(async (req, res) => {
   res.status(200).json({"mensaje": `Usuario con id ${req.params.id} eliminado`});
 });
 
+// register user
+const registerUser = asyncHandler(async (req, res) => {
+  const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    res.status(400);
+    throw new Error('Todos los campos son obligatorios');
+  }
+
+  try {
+    const userExists = await User.findOne({ $or: [{ username }, { email }] });
+    if (userExists) {
+      res.status(400);
+      throw new Error('El usuario o email ya está en uso');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await User.create({ username, email, password: hashedPassword });
+    res.status(201).json({message: 'Usuario creado correctamente' });
+  }
+  catch (error) {
+    res.status(500);
+    throw new Error('Error al registrar usuario');
+  }
+  
+});
+
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   updateUser,
-  deleteUser
+  deleteUser,
+  registerUser
 };

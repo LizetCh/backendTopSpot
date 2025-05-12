@@ -17,4 +17,7 @@ router.put('/:id', updateUser);
 // eliminar usuario
 router.delete('/:id', deleteUser);
 
+//registrar usuario
+router.post('/register', registerUser);
+
 module.exports = router;
