@@ -26,6 +26,11 @@ const createReview = asyncHandler(async (req, res) => {
 
 // obtener todas las reviews
 async function getAllReviews(req, res) {
+  const reviews = await Review.find();
+  res.json(reviews);
+
+
+/*
   try {
     const reviews = await Review.find().populate('user');
 
@@ -37,6 +42,10 @@ async function getAllReviews(req, res) {
           item = await Song.findById(review.itemId);
         } else if (review.itemType === 'album') {
           item = await Album.findById(review.itemId);
+        }
+        else {
+          console.error("Tipo de item no válido:", review.itemType);
+          return null; 
         }
 
         return {
@@ -64,6 +73,7 @@ async function getAllReviews(req, res) {
     console.error("Error al obtener reseñas:", error);
     res.status(500).json({ message: "Error del servidor" });
   }
+*/
 }
 
 // obtener una review por id

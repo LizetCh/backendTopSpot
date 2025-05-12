@@ -1,15 +1,29 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require("fs");
+
+const uploadDir = path.join(__dirname, "../public/uploads/profile-pics");
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // configuración de multer paea subir imágenes
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    let folder = "";
     if (file.fieldname === 'profilePic') {
-      cb(null, '../public/uploads/profile-pics/');
+      folder = path.join(__dirname, '../public/uploads/profile-pics/');
     } else if (file.fieldname === 'coverImage') {
-      cb(null, '../public/uploads/cover-images/');
+      folder = path.join(__dirname, '../public/uploads/cover-images/');
     }
+
+    if (!fs.existsSync(folder)) {
+      fs.mkdirSync(folder, { recursive: true });
+    }
+
+    cb(null, folder);
   },
   filename: function (req, file, cb) {
     const uniqueName = Date.now() + '-' + file.originalname;

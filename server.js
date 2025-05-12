@@ -5,6 +5,7 @@ const colors = require('colors'); //colors
 const connectDB = require('./config/db.js');
 const cors = require('cors'); //cors
 const port = process.env.PORT || 5000; //port
+const path = require('path'); //path
 const { errorHandler } = require('./middleware/errorMiddleware.js');
 
 // conexión a base de datos
@@ -30,8 +31,7 @@ app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use(errorHandler);
 
 // archivos estáticos para las imágenes
-app.use('/uploads', express.static('public/uploads'));
-
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 app.listen(port, () => console.log(`Servidor inicado en el puerto ${port}`));
 
