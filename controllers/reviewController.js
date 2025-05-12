@@ -1,5 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Review = require('../models/reviewModel');
+const Song = require('../models/songModel');
+const Album = require('../models/albumModel');
 
 
 // crear review
