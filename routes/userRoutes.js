@@ -20,4 +20,7 @@ router.delete('/:id', deleteUser);
 //registrar usuario
 router.post('/register', registerUser);
 
+//login user
+router.post('/login', loginUser);
+
 module.exports = router;

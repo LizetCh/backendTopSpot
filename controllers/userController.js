@@ -97,11 +97,47 @@ const registerUser = asyncHandler(async (req, res) => {
   
 });
 
+// login user
+const loginUser = asyncHandler(async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!email || !password) {
+    res.status(400);
+    throw new Error('Todos los campos son obligatorios');
+  }
+
+  try {
+    const user = await User.findOne({ username });
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    res.status(401);
+    throw new Error('Credenciales incorrectas');
+  }
+
+  res.status(200).json({
+    _id: user._id,
+    username: user.username,
+    email: user.email,
+    token: generateToken(user._id),
+  });
+
+  }catch (error) {
+    res.status(500);
+    throw new Error('Error al iniciar sesión');
+  }
+});
+
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: '30d',
+  });
+};
+
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   updateUser,
   deleteUser,
-  registerUser
+  registerUser,
+  loginUser
 };
