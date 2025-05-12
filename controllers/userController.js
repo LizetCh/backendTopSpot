@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const upload = require('../middleware/upload');
 
 // crear usuario
 const createUser = asyncHandler(async (req, res) => {
@@ -108,10 +109,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
   try {
     const user = await User.findOne({ username });
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    res.status(401);
-    throw new Error('Credenciales incorrectas');
-  }
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      res.status(401);
+      throw new Error('Credenciales incorrectas');
+    }
 
   res.status(200).json({
     _id: user._id,
@@ -132,6 +133,29 @@ const generateToken = (id) => {
   });
 };
 
+// subir foto de perfil
+const uploadProfile = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ error: 'No se subió ninguna imagen' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+    user.profilePic = `uploads/profile-pics/${req.file.filename}`;
+    await user.save();
+
+    res.json({ message: 'Imagen de perfil actualizada', profilePic: user.profilePic });
+  } catch (error) {
+    console.error('Error al subir imagen de perfil:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 module.exports = {
   createUser,
   getAllUsers,
@@ -139,5 +163,6 @@ module.exports = {
   updateUser,
   deleteUser,
   registerUser,
-  loginUser
+  loginUser,
+  uploadProfile
 };

@@ -29,6 +29,10 @@ app.use(errorHandler);
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use(errorHandler);
 
+// archivos estáticos para las imágenes
+app.use('/uploads', express.static('public/uploads'));
+
+
 app.listen(port, () => console.log(`Servidor inicado en el puerto ${port}`));
 
 

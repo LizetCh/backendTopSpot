@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { createUser, getAllUsers, updateUser, deleteUser, getUserById, registerUser, loginUser } = require('../controllers/userController');
+const { createUser, getAllUsers, updateUser, deleteUser, getUserById, registerUser, loginUser, uploadProfile } = require('../controllers/userController');
+const upload = require('../middleware/upload');
 
 //crear usuario
 router.post('/', createUser);
@@ -22,5 +23,8 @@ router.post('/register', registerUser);
 
 //login user
 router.post('/login', loginUser);
+
+// subir foto de perfil
+router.post('/uploadProfile', upload.single('profilePic'), uploadProfile);
 
 module.exports = router;
