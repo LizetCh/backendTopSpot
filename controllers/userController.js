@@ -101,7 +101,7 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
 
-  if (!email || !password) {
+  if (!username || !password) {
     res.status(400);
     throw new Error('Todos los campos son obligatorios');
   }

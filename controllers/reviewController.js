@@ -1,11 +1,12 @@
 const asyncHandler = require('express-async-handler');
 const Review = require('../models/reviewModel');
 
+
 // crear review
 const createReview = asyncHandler(async (req, res) => {
-  const { user, itemId, rating, comment } = req.body;
+  const { user, itemId, rating, comment, itemType } = req.body;
 
-  if (!user || !itemId || !rating) {
+  if (!user || !itemId || !rating || !itemType) {
     res.status(400);
     throw new Error('Faltan campos obligatorios');
   }
@@ -13,6 +14,7 @@ const createReview = asyncHandler(async (req, res) => {
   const review = await Review.create({
     user,
     itemId,
+    itemType, 
     rating,
     comment,
   });
@@ -21,10 +23,46 @@ const createReview = asyncHandler(async (req, res) => {
 });
 
 // obtener todas las reviews
-const getAllReviews = asyncHandler(async (req, res) => {
-  const reviews = await Review.find();
-  res.status(200).json(reviews);
-});
+async function getAllReviews(req, res) {
+  try {
+    const reviews = await Review.find().populate('user');
+
+    const populatedReviews = await Promise.all(
+      reviews.map(async (review) => {
+        let item = null;
+
+        if (review.itemType === 'song') {
+          item = await Song.findById(review.itemId);
+        } else if (review.itemType === 'album') {
+          item = await Album.findById(review.itemId);
+        }
+
+        return {
+          _id: review._id,
+          comment: review.comment,
+          rating: review.rating,
+          date: review.date,
+          user: {
+            username: review.user.username,
+            profilePic: review.user.profilePic || null,
+          },
+          item: item
+            ? {
+                title: item.title,
+                artist: item.artist,
+                cover: item.coverUrl || null,
+              }
+            : null,
+        };
+      })
+    );
+
+    res.json(populatedReviews);
+  } catch (error) {
+    console.error("Error al obtener reseñas:", error);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+}
 
 // obtener una review por id
 const getReviewById = asyncHandler(async (req, res) => {

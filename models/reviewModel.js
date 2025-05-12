@@ -6,6 +6,11 @@ const reviewSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  itemType: {
+    type: String,
+    enum: ['song', 'album'],
+    required: true,
+  },
   rating: {
     type: Number,
     min: 1,
