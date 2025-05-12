@@ -26,11 +26,6 @@ const createReview = asyncHandler(async (req, res) => {
 
 // obtener todas las reviews
 async function getAllReviews(req, res) {
-  const reviews = await Review.find();
-  res.json(reviews);
-
-
-/*
   try {
     const reviews = await Review.find().populate('user');
 
@@ -73,7 +68,7 @@ async function getAllReviews(req, res) {
     console.error("Error al obtener reseñas:", error);
     res.status(500).json({ message: "Error del servidor" });
   }
-*/
+
 }
 
 // obtener una review por id
